@@ -10,12 +10,16 @@ class WikiEIController  extends ModuleController
 	/** @var	string	Dossier d'export */
 	private static $export_folder = 'export';
 	
+	private static $redirects_export_folder = 'export/wiki_redirects';
+	
 	public function execute(\HTTPRequestCustom $request)
 	{
-		$this->check_directory();
+		$this->check_directories();
 		$this->init_tables();
 
 		$this->recursive_search(0, self::$export_folder);
+		
+		$this->create_redirects();
 		
 	}
 	
@@ -32,11 +36,16 @@ class WikiEIController  extends ModuleController
 	/**
 	 * Test de l'existence du dossier d'export cible, si non on le créé
 	 */
-	private function check_directory()
+	private function check_directories()
 	{
 		if (!file_exists(self::$export_folder))
 		{
 			mkdir(self::$export_folder);
+		}
+		
+		if (!file_exists(self::$redirects_export_folder))
+		{
+			mkdir(self::$redirects_export_folder);
 		}
 	}
 	
@@ -58,7 +67,6 @@ class WikiEIController  extends ModuleController
 			$file = new WikiEIArticle($curr_dir);
 			$file->hydrate_by_sql($rowfiles);
 			$file->export();
-
 		}
 		
 		// Récupération des catégories contenues dans la catégorie en cours
@@ -78,6 +86,20 @@ class WikiEIController  extends ModuleController
 		$result->dispose();
 	}
 	
+	private function create_redirects()
+	{
+		// Récupération des redirections de la catégorie en cours
+		$redirects_result = PersistenceContext::get_querier()->select($this->get_redirects_query(), array(
+		), SelectQueryResult::FETCH_ASSOC);
+			
+		while($rowredirects = $redirects_result->fetch())
+		{
+			$redirect = new WikiEIRedirect(self::$redirects_export_folder);
+			$redirect->hydrate_by_sql($rowredirects);
+			$redirect->export();
+		}
+	}
+	
 	private function get_cats_query()
 	{
 		return $this->get_general_query() . ' WHERE cat.id_parent = :id'
@@ -90,6 +112,11 @@ class WikiEIController  extends ModuleController
 		return $this->get_general_query() . ' WHERE art.id_cat = :id AND con.activ = 1 AND art.is_cat = 0 AND art.redirect = 0';
 	}
 	
+	private function get_redirects_query()
+	{
+		return 'SELECT * FROM ' . self::$articles_table . ' WHERE redirect != 0';
+	}
+
 	private function get_general_query()
 	{
 		return 'SELECT art.id, art.id_contents, art.title, art.encoded_title,'

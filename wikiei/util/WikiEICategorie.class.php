@@ -4,6 +4,14 @@ class WikiEICategorie extends WikiEIFileAbstract
 {
 	public $type = 'cat';
 	
+	public $fields = array(
+		'id','id_contents','title','encoded_title','hits','id_cat','is_cat',
+		'defined_status','undefined_status','redirect','auth',
+		'cat_id','cat_id_parent','cat_article_id',
+		'con_id_contents','con_id_article','menu','activ','user_id',
+		'user_ip','timestamp','content'
+	);
+	
 	/**
 	 * Préparation du chemin à créer
 	 */
