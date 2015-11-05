@@ -15,9 +15,19 @@ class WikiEIXMLWriter
 		$this->init_content();
 	}
 	
+	public function open_fields_cat($name)
+	{
+		$this->content .= '  <' . self::PREFIX . $name . '>' . "\n";
+	}
+	
+	public function close_fields_cat($name)
+	{
+		$this->content .= '  </' . self::PREFIX . $name . '>' . "\n";
+	}
+	
 	public function add_field($name, $value)
 	{
-		$this->content .= '  <' . self::PREFIX . $name . '>' . $value . '</' . self::PREFIX . $name . '>' . "\n";
+		$this->content .= '    <' . self::PREFIX . $name . '>' . $value . '</' . self::PREFIX . $name . '>' . "\n";
 	}
 	
 	public function save()

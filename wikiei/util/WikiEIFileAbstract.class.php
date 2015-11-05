@@ -31,14 +31,6 @@ abstract class WikiEIFileAbstract
 	public $user_ip;
 	public $timestamp;
 	
-	public $fields = array(
-		'id','id_contents','title','encoded_title','hits','id_cat','is_cat',
-		'defined_status','undefined_status','redirect','auth',
-		'cat_id','cat_id_parent','cat_article_id',
-		'con_id_contents','con_id_article','menu','activ','user_id',
-		'user_ip','timestamp','content'
-	);
-	
 	// Others properties
 	public $real_path;
 	public $filename;
@@ -57,9 +49,12 @@ abstract class WikiEIFileAbstract
 	
 	public function hydrate_by_sql($row)
 	{
-		foreach ($this->fields as $field)
+		foreach ($this->fields as $cat_field)
 		{
-			$this->{$field} = $row[$field];
+			foreach ($this->{$cat_field} as $field)
+			{
+				$this->{$field} = $row[$field];
+			}
 		}
 	}
 	
@@ -72,9 +67,14 @@ abstract class WikiEIFileAbstract
 		
 		$writer = new WikiEIXMLWriter($this);
 		
-		foreach ($this->fields as $field)
+		foreach ($this->fields as $cat_field)
 		{
-			$writer->add_field($field, $this->{$field});
+			$writer->open_fields_cat($cat_field);
+			foreach ($this->{$cat_field} as $field)
+			{
+				$writer->add_field($field, $this->{$field});
+			}
+			$writer->close_fields_cat($cat_field);
 		}
 		$writer->save();
 	}
