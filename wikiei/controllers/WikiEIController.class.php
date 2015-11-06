@@ -7,20 +7,25 @@ class WikiEIController  extends ModuleController
 	private static $cats_table;
 	private static $contents_table;
 	
-	/** @var	string	Dossier d'export */
-	private static $export_folder = 'export';
+	/**
+	 * @var \WikiEIConfig
+	 */
+	private static $config;
 	
-	private static $redirects_export_folder = 'export/wiki_redirects';
+	/** @var	string	Dossier d'export */
+	private static $export_folder;
+	
+	private static $redirects_export_folder;
 	
 	public function execute(\HTTPRequestCustom $request)
 	{
-		$this->check_directories();
+		$this->init_config();
+		$this->init_directories();
 		$this->init_tables();
-
+		
 		$this->recursive_search(0, self::$export_folder);
 		
 		$this->create_redirects();
-		
 	}
 	
 	/**
@@ -34,10 +39,21 @@ class WikiEIController  extends ModuleController
 	}
 	
 	/**
+	 * Initialisation de la configuration
+	 */
+	private function init_config()
+	{
+		self::$config = WikiEIConfig::load();
+	}
+	
+	/**
 	 * Test de l'existence du dossier d'export cible, si non on le créé
 	 */
-	private function check_directories()
+	private function init_directories()
 	{
+		self::$export_folder = self::$config->get_export_path();
+		self::$redirects_export_folder = self::$export_folder . DIRECTORY_SEPARATOR . 'wiki_redirects';
+		
 		if (!file_exists(self::$export_folder))
 		{
 			mkdir(self::$export_folder);

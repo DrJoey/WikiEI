@@ -40,6 +40,8 @@ abstract class WikiEIFileAbstract
 	// File
 	public $file;
 	
+	public $fields = array();
+	
 	abstract protected function before_to_export();
 
 	public function __construct($dir)
@@ -56,6 +58,12 @@ abstract class WikiEIFileAbstract
 				$this->{$field} = $row[$field];
 			}
 		}
+	}
+	
+	public function hydrate_by_xml(\WikiEIXMLReader $xml_importer)
+	{
+		$xml_importer->set_file($this);
+		$xml_importer->fill_fields_content();
 	}
 	
 	final public function export()

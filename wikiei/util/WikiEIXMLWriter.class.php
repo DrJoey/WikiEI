@@ -42,7 +42,7 @@ class WikiEIXMLWriter
 	private function init_content()
 	{
 		$this->content = '<?xml version="1.0" encoding="iso-8859-1"?>'."\n";
-		$this->content .= '<' . self::PREFIX . $this->file->type . '>' . "\n";
+		$this->content .= '<' . self::PREFIX . $this->file->type . '_infos>' . "\n";
 	}
 	
 	

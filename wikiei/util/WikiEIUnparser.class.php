@@ -26,6 +26,8 @@ class WikiEIUnparser
 		$this->unparser->parse();
 
 		$this->content = $this->unparser->get_content();
+		
+		$this->make_relatives_images_url();
 	}
 	
 	public function get_content()
@@ -42,6 +44,11 @@ class WikiEIUnparser
 			$this->content = preg_replace('`[\r\n]+<(?:div|h[1-5]) class="wiki_paragraph' .  $i . '" id=".+">(.+)</(?:div|h[1-5])><br />[\r\n]+`sU', "\n" . $string_regex . ' $1 '. $string_regex, "\n" . $this->content . "\n");
 		}
 		$this->content = trim($this->content);
+	}
+	
+	protected function make_relatives_images_url()
+	{
+		$this->content = preg_replace('`\[img\]http:\/\/resources\.phpboost\.com/documentation/`isU', "[img]images/", $this->content);
 	}
 	
 	

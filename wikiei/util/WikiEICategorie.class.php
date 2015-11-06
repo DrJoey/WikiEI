@@ -18,8 +18,8 @@ class WikiEICategorie extends WikiEIFileAbstract
 	);
 	
 	public $contents_fields = array(
-		'con_id_contents','con_id_article','menu','activ','user_id',
-		'user_ip','timestamp','content'
+		'con_id_contents','con_id_article','menu','content','activ','user_id',
+		'user_ip','timestamp'
 	);
 	
 	/**
