@@ -2,7 +2,12 @@
 
 abstract class WikiEIFileAbstract
 {	
-	// wiki_articles
+	// **** Hydratation ****
+	
+	/** @var array		Champs pour l'hydratation */
+	public $fields = array();
+	
+	/** Champs du noeud articles_fields */
 	public $id;
 	public $id_contents;
 	public $title;
@@ -14,14 +19,20 @@ abstract class WikiEIFileAbstract
 	public $undefined_status;
 	public $redirect;
 	public $auth;
+	public $articles_fields = array(
+		'id','id_contents','title','encoded_title','hits','id_cat','is_cat',
+		'defined_status','undefined_status','redirect','auth'
+	);
 	
-	//wiki_cats
+	/** Champs du noeud cats_fields */
 	public $cat_id;
 	public $cat_id_parent;
 	public $cat_article_id;
+	public $cats_fields = array(
+		'cat_id','cat_id_parent','cat_article_id'
+	);
 	
-	//wiki_contents
-	
+	/** Champs du noeud contents_infos */
 	public $con_id_contents;
 	public $con_id_article;
 	public $menu;
@@ -30,19 +41,28 @@ abstract class WikiEIFileAbstract
 	public $user_id;
 	public $user_ip;
 	public $timestamp;
+	public $contents_fields = array(
+		'con_id_contents','con_id_article','menu','content','activ','user_id',
+		'user_ip','timestamp'
+	);
 	
-	// Others properties
+	
+	// **** Sauvegarde en DB ****
+	
+	/** @var array		Tables à sauvegarder en DB */
+	public $tables_to_save = array();
+	
+	
+	// **** Système de fichiers ****
+	
+	/** @var string		Chemin du fichier */
 	public $real_path;
+	
+	/** @var string		Nom du fichier à exporter sans extension */
 	public $filename;
 	
+	/** @var string		Type de fichier (cat, article, redirect) */
 	public $type;
-	
-	// File
-	public $file;
-	
-	public $fields = array();
-	
-	abstract protected function before_to_export();
 
 	public function __construct($dir)
 	{
@@ -71,7 +91,10 @@ abstract class WikiEIFileAbstract
 		$this->prepare_title_for_filename();
 		$this->unparse_content();
 		
-		$this->before_to_export();
+		if (method_exists($this, 'before_to_export'))
+		{
+			$this->before_to_export();
+		}
 		
 		$writer = new WikiEIXMLWriter($this);
 		
@@ -87,6 +110,23 @@ abstract class WikiEIFileAbstract
 		$writer->save();
 	}
 	
+	public function add_rows_to_importer(\WikiEIImporterAbstract $importer)
+	{
+		foreach ($this->tables_to_save as $key => $value)
+		{
+			$array_fields = array();
+			foreach ($this->{$value} as $field)
+			{
+				if (!is_numeric($this->{$field}))
+				{
+					$this->{$field} = "'" . $this->{$field} . "'";
+				}
+				$array_fields[] = $this->{$field};
+			}
+			$importer->add_row($key, $array_fields);
+		}
+	}
+
 	/**
 	 * Preparation du titre du fichier
 	 */

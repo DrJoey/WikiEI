@@ -8,9 +8,8 @@ class WikiEIRedirect extends WikiEIFileAbstract
 		'articles_fields'
 	);
 	
-	public $articles_fields = array(
-		'id','id_contents','title','encoded_title','hits','id_cat','is_cat',
-		'defined_status','undefined_status','redirect','auth'
+	public $tables_to_save = array(
+		'wiki_articles' => 'articles_fields'
 	);
 	
 	protected function before_to_export()

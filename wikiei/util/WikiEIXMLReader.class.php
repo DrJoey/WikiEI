@@ -24,6 +24,7 @@ class WikiEIXMLReader
 		$line = fgets($handle);
 		while ($line)
 		{
+			// On remplace les '<' et '>' sinon le navigateur ne nous donne pas accès aux balises XML
 			$line = str_replace("<", "&lt;", $line);
 			$line = str_replace(">", "&gt;", $line);
 			$this->content .= $line;
@@ -39,7 +40,8 @@ class WikiEIXMLReader
 			{
 				preg_match('#&lt;' . self::PREFIX . $field . '&gt;(.*)&lt;/' . self::PREFIX . $field . '&gt;#isU', $this->content, $matches);
 				$this->file->{$field} = $matches[1];
-				echo $field . '_' . $this->file->{$field} . '<br/>';
+				$this->file->{$field} = str_replace("&lt;", "<", $this->file->{$field});
+				$this->file->{$field} = str_replace("&gt;", ">", $this->file->{$field});
 			}
 		}
 	}

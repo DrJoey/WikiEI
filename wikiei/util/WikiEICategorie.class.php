@@ -2,24 +2,17 @@
 
 class WikiEICategorie extends WikiEIFileAbstract 
 {
+	
 	public $type = 'cat';
 	
 	public $fields = array(
 		'articles_fields', 'cats_fields', 'contents_fields'
 	);
 	
-	public $articles_fields = array(
-		'id','id_contents','title','encoded_title','hits','id_cat','is_cat',
-		'defined_status','undefined_status','redirect','auth'
-	);
-	
-	public $cats_fields = array(
-		'cat_id','cat_id_parent','cat_article_id'
-	);
-	
-	public $contents_fields = array(
-		'con_id_contents','con_id_article','menu','content','activ','user_id',
-		'user_ip','timestamp'
+	public $tables_to_save = array(
+		'wiki_articles' => 'articles_fields',
+		'wiki_cats' => 'cats_fields',
+		'wiki_contents' => 'contents_fields'
 	);
 	
 	/**

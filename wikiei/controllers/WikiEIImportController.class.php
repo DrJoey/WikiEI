@@ -18,6 +18,8 @@ class WikiEIImportController  extends ModuleController
 	private static $export_folder;
 	
 	private static $redirects_export_folder;
+	
+	private $importer;
 
 	public function execute(\HTTPRequestCustom $request)
 	{
@@ -28,7 +30,11 @@ class WikiEIImportController  extends ModuleController
 			$tpl = new StringTemplate(sprintf($this->lang['export_path_not_exist'], self::$export_folder));
 			return $this->build_response($tpl);
 		}
+		
+		$this->importer = new WikiEISQLImporter();
 		$this->recursive_explorer(self::$export_folder);
+		
+		$this->importer->save();
 		
 	}
 	
@@ -55,16 +61,25 @@ class WikiEIImportController  extends ModuleController
 				// redirection
 				$redirect = new WikiEIRedirect($path);
 				$redirect->hydrate_by_xml(new WikiEIXMLReader());
+				
+				$redirect->add_rows_to_importer($this->importer);
 
 			}
 			elseif (basename($path, '.xml') === '_cat_infos')
 			{
 				// catégorie
+				$cat = new WikiEICategorie($path);
+				$cat->hydrate_by_xml(new WikiEIXMLReader());
+				
+				$cat->add_rows_to_importer($this->importer);
 			}
 			else
 			{
 				// article
-				echo $path . "<br/>";
+				$article = new WikiEIArticle($path);
+				$article->hydrate_by_xml(new WikiEIXMLReader());
+				
+				$article->add_rows_to_importer($this->importer);
 			}
 
 		}
