@@ -31,7 +31,7 @@ class WikiEIImportController  extends ModuleController
 			return $this->build_response($tpl);
 		}
 		
-		$this->importer = new WikiEISQLImporter();
+		$this->importer = new WikiEISQLImporter(self::$export_folder);
 		$this->recursive_explorer(self::$export_folder);
 		
 		$this->importer->save();
@@ -52,7 +52,7 @@ class WikiEIImportController  extends ModuleController
 				}
 			}
 		}
-		else
+		elseif (pathinfo($path, PATHINFO_EXTENSION) === 'xml')
 		{
 			// fichier
 			$folder_parent = dirname($path);

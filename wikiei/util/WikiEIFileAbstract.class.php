@@ -112,6 +112,8 @@ abstract class WikiEIFileAbstract
 	
 	public function add_rows_to_importer(\WikiEIImporterAbstract $importer)
 	{
+		$parse_img = (get_class($importer) === 'WikiEISQLImporter') ? true : false;
+		$this->parse_content($parse_img);
 		foreach ($this->tables_to_save as $key => $value)
 		{
 			$array_fields = array();
@@ -127,6 +129,14 @@ abstract class WikiEIFileAbstract
 		}
 	}
 
+	protected function parse_content($parse_img = false)
+	{
+		
+			$parser = new WikiEIParser($this);
+		
+			$parser->parse($parse_img);
+	}
+	
 	/**
 	 * Preparation du titre du fichier
 	 */
@@ -145,8 +155,7 @@ abstract class WikiEIFileAbstract
 	 */
 	protected function unparse_content()
 	{
-		$unparser = new WikiEIUnparser($this->content);
+		$unparser = new WikiEIUnparser($this);
 		$unparser->unparse();
-		$this->content = $unparser->get_content();
 	}
 }

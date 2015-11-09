@@ -8,17 +8,15 @@ class WikiEISQLImporter extends WikiEIImporterAbstract
 	
 	private $contents_content;
 	
-	private $content;
-	
 	private $filename;
 	
-	private $file;
-	
-	public function __construct()
+	public function __construct($path)
 	{
 		$this->init_articles_content();
-		mkdir('export');
-		$this->filename = 'export/p.sql';
+		$this->init_cats_content();
+		$this->init_contents_content();
+
+		$this->filename = $path . '/import-' . date("d-m-y") . '.sql';
 	}
 	
 	protected function treatment_row($line, $table)
@@ -41,8 +39,12 @@ class WikiEISQLImporter extends WikiEIImporterAbstract
 	
 	public function save()
 	{
+		if (file_exists($this->filename)) unlink($this->filename);
+		
 		$file = fopen($this->filename ,'a');
 		fputs($file, $this->articles_content);
+		fputs($file, $this->cats_content);
+		fputs($file, $this->contents_content);
 		fclose($file);
 	}
 	
@@ -64,5 +66,33 @@ CREATE TABLE `" . PREFIX . "wiki_articles` (
   PRIMARY KEY (`id`),
   FULLTEXT KEY `title` (`title`)
 ) ENGINE=MyISAM AUTO_INCREMENT=315 DEFAULT CHARSET=latin1;\n";
+	}
+	
+	private function init_cats_content()
+	{
+		$this->cats_content = "DROP TABLE IF EXISTS `" . PREFIX . "wiki_cats`;
+CREATE TABLE `" . PREFIX . "wiki_cats` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_parent` int(11) NOT NULL DEFAULT '0',
+  `article_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=83 DEFAULT CHARSET=latin1;";
+	}
+	
+	private function init_contents_content()
+	{
+		$this->contents_content = "DROP TABLE IF EXISTS `" . PREFIX . "wiki_contents`;
+CREATE TABLE `" . PREFIX . "wiki_contents` (
+  `id_contents` int(11) NOT NULL AUTO_INCREMENT,
+  `id_article` int(11) NOT NULL DEFAULT '0',
+  `menu` text,
+  `content` text,
+  `activ` tinyint(1) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT '0',
+  `user_ip` varchar(50) DEFAULT '',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_contents`),
+  FULLTEXT KEY `content` (`content`)
+) ENGINE=MyISAM AUTO_INCREMENT=1442 DEFAULT CHARSET=latin1;";
 	}
 }

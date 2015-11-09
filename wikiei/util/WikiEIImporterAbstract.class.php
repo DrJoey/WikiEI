@@ -16,7 +16,7 @@ abstract class WikiEIImporterAbstract
 	
 	// Champs des contenus
 	public $wiki_contents = array(
-		'con_id_contents','con_id_article','menu','content','activ','user_id',
+		'id_contents','id_article','menu','content','activ','user_id',
 		'user_ip','timestamp'
 	);
 	
