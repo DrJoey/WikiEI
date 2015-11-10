@@ -76,7 +76,7 @@ CREATE TABLE `" . PREFIX . "wiki_cats` (
   `id_parent` int(11) NOT NULL DEFAULT '0',
   `article_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=83 DEFAULT CHARSET=latin1;";
+) ENGINE=MyISAM AUTO_INCREMENT=83 DEFAULT CHARSET=latin1;\n";
 	}
 	
 	private function init_contents_content()
@@ -93,6 +93,6 @@ CREATE TABLE `" . PREFIX . "wiki_contents` (
   `timestamp` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_contents`),
   FULLTEXT KEY `content` (`content`)
-) ENGINE=MyISAM AUTO_INCREMENT=1442 DEFAULT CHARSET=latin1;";
+) ENGINE=MyISAM AUTO_INCREMENT=1442 DEFAULT CHARSET=latin1;\n";
 	}
 }
